@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Card Scanner</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Business Card Scanner</h1>
+        <form id="uploadForm">
+            <input type="file" id="imageInput" accept="image/*" required>
+            <button type="submit">Scan Business Card</button>
+        </form>
+        <div id="loadingMessage" style="display: none;">Processing...</div>
+        <div id="cardList"></div>
+    </div>
+    <script type="module" src="index.js"></script>
+</body>
+</html>
