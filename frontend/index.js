@@ -60,23 +60,34 @@ function readFileAsDataURL(file) {
 }
 
 async function extractTextFromImage(imageData) {
-  const response = await fetch('https://api.ocr.space/parse/image', {
-    method: 'POST',
-    headers: {
-      'apikey': 'helloworld',
-    },
-    body: JSON.stringify({
-      base64Image: imageData.split(',')[1],
-      language: 'eng',
-    }),
-  });
+  try {
+    const response = await fetch('https://api.ocr.space/parse/image', {
+      method: 'POST',
+      headers: {
+        'apikey': 'helloworld',
+      },
+      body: JSON.stringify({
+        base64Image: imageData.split(',')[1],
+        language: 'eng',
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error('OCR API request failed');
+    if (!response.ok) {
+      throw new Error(`OCR API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('OCR API response:', data); // For debugging
+
+    if (!data.ParsedResults || !data.ParsedResults[0] || !data.ParsedResults[0].ParsedText) {
+      throw new Error('Unexpected OCR API response format');
+    }
+
+    return data.ParsedResults[0].ParsedText;
+  } catch (error) {
+    console.error('Error in extractTextFromImage:', error);
+    throw new Error('Failed to extract text from image');
   }
-
-  const data = await response.json();
-  return data.ParsedResults[0].ParsedText;
 }
 
 function parseBusinessCardInfo(text) {
