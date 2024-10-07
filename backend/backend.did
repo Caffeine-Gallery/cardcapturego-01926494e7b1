@@ -12,4 +12,5 @@ type BusinessCard =
 service : {
   addBusinessCard: (text, text, text, text, text, text) -> (nat);
   getBusinessCards: () -> (vec BusinessCard) query;
+  getCategories: () -> (vec text) query;
 }

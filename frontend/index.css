@@ -7,10 +7,23 @@ body {
 }
 
 .container {
-    width: 80%;
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
     margin: auto;
-    overflow: hidden;
     padding: 20px;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    margin-right: 20px;
+}
+
+.main-content {
+    flex-grow: 1;
 }
 
 h1, h2 {
@@ -67,7 +80,7 @@ button:hover {
     border-radius: 5px;
     padding: 20px;
     margin-bottom: 20px;
-    width: calc(33% - 20px);
+    width: calc(50% - 20px);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -81,13 +94,38 @@ button:hover {
     margin-top: 0;
 }
 
-@media (max-width: 768px) {
-    .card {
-        width: calc(50% - 20px);
-    }
+#categoryList {
+    list-style-type: none;
+    padding: 0;
 }
 
-@media (max-width: 480px) {
+#categoryList li {
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+}
+
+#categoryList li:hover {
+    background-color: #f0f0f0;
+}
+
+#categoryList li.active {
+    background-color: #333;
+    color: #fff;
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
     .card {
         width: 100%;
     }

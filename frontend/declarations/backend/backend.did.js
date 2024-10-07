@@ -16,6 +16,7 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'getBusinessCards' : IDL.Func([], [IDL.Vec(BusinessCard)], ['query']),
+    'getCategories' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
   });
 };
 export const init = ({ IDL }) => { return []; };

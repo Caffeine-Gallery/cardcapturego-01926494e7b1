@@ -2,22 +2,20 @@ import { backend } from 'declarations/backend';
 
 const uploadForm = document.getElementById('uploadForm');
 const imageInput = document.getElementById('imageInput');
-const categoryInput = document.getElementById('categoryInput');
 const loadingMessage = document.getElementById('loadingMessage');
 const errorMessage = document.getElementById('errorMessage');
 const manualInputForm = document.getElementById('manualInputForm');
 const cardList = document.getElementById('cardList');
+const categoryList = document.getElementById('categoryList');
+
+let allCards = [];
+let currentCategory = 'all';
 
 uploadForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const file = imageInput.files[0];
-  const category = categoryInput.value.trim();
   if (!file) {
     showError('Please select an image file.');
-    return;
-  }
-  if (!category) {
-    showError('Please enter a category.');
     return;
   }
 
@@ -34,11 +32,12 @@ uploadForm.addEventListener('submit', async (e) => {
     const imageData = await readFileAsDataURL(file);
     const extractedText = await extractTextFromImage(file);
     const cardInfo = parseBusinessCardInfo(extractedText);
+    const category = detectCategory(extractedText);
     
     await addBusinessCard(cardInfo, imageData, category);
 
     loadingMessage.style.display = 'none';
-    await displayBusinessCards();
+    await refreshCards();
   } catch (error) {
     console.error('Error processing business card:', error);
     showError('An error occurred while processing the business card. Please try manual input.');
@@ -55,7 +54,7 @@ document.getElementById('submitManualInput').addEventListener('click', async () 
     phone: document.getElementById('phoneInput').value,
     company: document.getElementById('companyInput').value,
   };
-  const category = document.getElementById('manualCategoryInput').value.trim();
+  const category = document.getElementById('categoryInput').value.trim();
 
   if (!category) {
     showError('Please enter a category.');
@@ -65,7 +64,7 @@ document.getElementById('submitManualInput').addEventListener('click', async () 
   const imageData = await readFileAsDataURL(imageInput.files[0]);
   await addBusinessCard(cardInfo, imageData, category);
   manualInputForm.style.display = 'none';
-  await displayBusinessCards();
+  await refreshCards();
 });
 
 function showError(message) {
@@ -109,6 +108,15 @@ function parseBusinessCardInfo(text) {
   return info;
 }
 
+function detectCategory(text) {
+  const lowercaseText = text.toLowerCase();
+  if (lowercaseText.includes('tech') || lowercaseText.includes('software')) return 'Technology';
+  if (lowercaseText.includes('finance') || lowercaseText.includes('bank')) return 'Finance';
+  if (lowercaseText.includes('health') || lowercaseText.includes('medical')) return 'Healthcare';
+  if (lowercaseText.includes('law') || lowercaseText.includes('legal')) return 'Legal';
+  return 'Other';
+}
+
 async function addBusinessCard(cardInfo, imageData, category) {
   try {
     await backend.addBusinessCard(
@@ -125,24 +133,60 @@ async function addBusinessCard(cardInfo, imageData, category) {
   }
 }
 
-async function displayBusinessCards() {
+async function refreshCards() {
   try {
-    const cards = await backend.getBusinessCards();
-    cardList.innerHTML = cards.map(card => `
-      <div class="card">
-        <img src="${card.imageData}" alt="Business Card">
-        <h3>${card.name}</h3>
-        <p>Email: ${card.email}</p>
-        <p>Phone: ${card.phone}</p>
-        <p>Company: ${card.company}</p>
-        <p>Category: ${card.category}</p>
-        <p>Scan Date: ${new Date(Number(card.scanDate) / 1000000).toLocaleString()}</p>
-      </div>
-    `).join('');
+    allCards = await backend.getBusinessCards();
+    const categories = await backend.getCategories();
+    updateCategoryList(categories);
+    displayBusinessCards();
   } catch (error) {
     console.error('Error fetching business cards:', error);
     showError('An error occurred while fetching business cards. Please refresh the page.');
   }
 }
 
-displayBusinessCards();
+function updateCategoryList(categories) {
+  categoryList.innerHTML = '<li class="active" data-category="all">All</li>';
+  categories.forEach(category => {
+    const li = document.createElement('li');
+    li.textContent = category;
+    li.dataset.category = category;
+    li.addEventListener('click', () => {
+      currentCategory = category;
+      displayBusinessCards();
+      updateActiveCategory(li);
+    });
+    categoryList.appendChild(li);
+  });
+}
+
+function updateActiveCategory(clickedElement) {
+  document.querySelectorAll('#categoryList li').forEach(li => li.classList.remove('active'));
+  clickedElement.classList.add('active');
+}
+
+function displayBusinessCards() {
+  const filteredCards = currentCategory === 'all' 
+    ? allCards 
+    : allCards.filter(card => card.category === currentCategory);
+
+  cardList.innerHTML = filteredCards.map(card => `
+    <div class="card">
+      <img src="${card.imageData}" alt="Business Card">
+      <h3>${card.name}</h3>
+      <p>Email: ${card.email}</p>
+      <p>Phone: ${card.phone}</p>
+      <p>Company: ${card.company}</p>
+      <p>Category: ${card.category}</p>
+      <p>Scan Date: ${new Date(Number(card.scanDate) / 1000000).toLocaleString()}</p>
+    </div>
+  `).join('');
+}
+
+categoryList.querySelector('[data-category="all"]').addEventListener('click', () => {
+  currentCategory = 'all';
+  displayBusinessCards();
+  updateActiveCategory(categoryList.querySelector('[data-category="all"]'));
+});
+
+refreshCards();

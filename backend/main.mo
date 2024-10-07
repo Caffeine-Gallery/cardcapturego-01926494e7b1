@@ -1,3 +1,5 @@
+import Bool "mo:base/Bool";
+import Hash "mo:base/Hash";
 import Int "mo:base/Int";
 
 import Array "mo:base/Array";
@@ -5,6 +7,8 @@ import Blob "mo:base/Blob";
 import Nat "mo:base/Nat";
 import Text "mo:base/Text";
 import Time "mo:base/Time";
+import Iter "mo:base/Iter";
+import HashMap "mo:base/HashMap";
 
 actor BusinessCardScanner {
   type BusinessCard = {
@@ -42,5 +46,13 @@ actor BusinessCardScanner {
 
   public query func getBusinessCards() : async [BusinessCard] {
     cards
+  };
+
+  public query func getCategories() : async [Text] {
+    let categorySet = HashMap.HashMap<Text, Bool>(10, Text.equal, Text.hash);
+    for (card in cards.vals()) {
+      categorySet.put(card.category, true);
+    };
+    Iter.toArray(categorySet.keys())
   };
 }
