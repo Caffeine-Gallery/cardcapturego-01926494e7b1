@@ -12,12 +12,12 @@ let allCards = [];
 let currentCategory = 'all';
 
 const categoryIcons = {
-    'all': 'fa-th-large',
-    'Technology': 'fa-laptop-code',
-    'Finance': 'fa-chart-line',
-    'Healthcare': 'fa-heartbeat',
-    'Legal': 'fa-balance-scale',
-    'Other': 'fa-folder'
+    'all': '<rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect>',
+    'Technology': '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>',
+    'Finance': '<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
+    'Healthcare': '<path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>',
+    'Legal': '<circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path>',
+    'Other': '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>'
 };
 
 uploadForm.addEventListener('submit', async (e) => {
@@ -157,7 +157,9 @@ async function refreshCards() {
 function updateCategoryList(categories) {
     categoryList.innerHTML = `
         <li class="active" data-category="all">
-            <i class="fas ${categoryIcons['all']}"></i>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                ${categoryIcons['all']}
+            </svg>
             All
         </li>
     `;
@@ -165,7 +167,9 @@ function updateCategoryList(categories) {
         const li = document.createElement('li');
         li.dataset.category = category;
         li.innerHTML = `
-            <i class="fas ${categoryIcons[category] || categoryIcons['Other']}"></i>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                ${categoryIcons[category] || categoryIcons['Other']}
+            </svg>
             ${category}
         `;
         li.addEventListener('click', () => {
@@ -194,9 +198,11 @@ function displayBusinessCards() {
             <p>Email: ${card.email}</p>
             <p>Phone: ${card.phone}</p>
             <p>Company: ${card.company}</p>
-            <p>
-                <i class="fas ${categoryIcons[card.category] || categoryIcons['Other']}"></i>
-                Category: ${card.category}
+            <p class="category">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    ${categoryIcons[card.category] || categoryIcons['Other']}
+                </svg>
+                ${card.category}
             </p>
             <p>Scan Date: ${new Date(Number(card.scanDate) / 1000000).toLocaleString()}</p>
         </div>

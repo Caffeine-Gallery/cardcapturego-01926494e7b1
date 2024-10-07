@@ -141,13 +141,18 @@ button:hover {
     color: #fff;
 }
 
-#categoryList li i {
+.icon {
+    width: 24px;
+    height: 24px;
     margin-right: 10px;
-    width: 20px;
-    text-align: center;
 }
 
-.card p i {
+.card .category {
+    display: flex;
+    align-items: center;
+}
+
+.card .category .icon {
     margin-right: 5px;
 }
 
