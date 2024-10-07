@@ -154,19 +154,8 @@ button:hover {
     color: #fff;
 }
 
-.icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
-}
-
-.card .category {
-    display: flex;
-    align-items: center;
-}
-
-.card .category .icon {
-    margin-right: 5px;
+.category {
+    font-size: 1.2em;
 }
 
 @media (max-width: 768px) {

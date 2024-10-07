@@ -22,12 +22,23 @@ actor BusinessCardScanner {
     category: Text;
   };
 
+  let presetCategories : [Text] = [
+    "Technology", "Finance", "Healthcare", "Legal", "Education", 
+    "Marketing", "Real Estate", "Hospitality", "Retail", "Other"
+  ];
+
   stable var cards : [BusinessCard] = [];
   stable var nextId : Nat = 0;
 
   public func addBusinessCard(name: Text, email: Text, phone: Text, company: Text, imageData: Text, category: Text) : async Nat {
     let id = nextId;
     nextId += 1;
+
+    let validCategory = if (Array.find(presetCategories, func (c: Text) : Bool { c == category }) != null) {
+      category
+    } else {
+      "Other"
+    };
 
     let newCard : BusinessCard = {
       id;
@@ -37,7 +48,7 @@ actor BusinessCardScanner {
       company;
       imageData;
       scanDate = Time.now();
-      category;
+      category = validCategory;
     };
 
     cards := Array.append(cards, [newCard]);
@@ -49,11 +60,7 @@ actor BusinessCardScanner {
   };
 
   public query func getCategories() : async [Text] {
-    let categorySet = HashMap.HashMap<Text, Bool>(10, Text.equal, Text.hash);
-    for (card in cards.vals()) {
-      categorySet.put(card.category, true);
-    };
-    Iter.toArray(categorySet.keys())
+    presetCategories
   };
 
   public query func searchBusinessCards(searchText: Text) : async [BusinessCard] {
