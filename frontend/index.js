@@ -26,7 +26,7 @@ uploadForm.addEventListener('submit', async (e) => {
 
   try {
     const imageData = await readFileAsDataURL(file);
-    const extractedText = await extractTextFromImage(imageData);
+    const extractedText = await extractTextFromImage(file);
     const cardInfo = parseBusinessCardInfo(extractedText);
     
     await addBusinessCard(cardInfo, imageData);
@@ -74,35 +74,14 @@ function readFileAsDataURL(file) {
   });
 }
 
-async function extractTextFromImage(imageData) {
+async function extractTextFromImage(file) {
   try {
-    const response = await fetch('https://api.ocr.space/parse/image', {
-      method: 'POST',
-      headers: {
-        'apikey': 'helloworld',
-      },
-      body: JSON.stringify({
-        base64Image: imageData.split(',')[1],
-        language: 'eng',
-      }),
+    const result = await Tesseract.recognize(file, 'eng', {
+      logger: m => console.log(m)
     });
-
-    if (!response.ok) {
-      throw new Error(`OCR API request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Full OCR API response:', data);
-
-    if (data.ParsedResults && data.ParsedResults.length > 0) {
-      return data.ParsedResults[0].ParsedText || '';
-    } else if (data.ErrorMessage) {
-      throw new Error(`OCR API error: ${data.ErrorMessage}`);
-    } else {
-      throw new Error('Unexpected OCR API response format');
-    }
+    return result.data.text;
   } catch (error) {
-    console.error('Error in extractTextFromImage:', error);
+    console.error('Error in Tesseract OCR:', error);
     throw new Error('Failed to extract text from image');
   }
 }
