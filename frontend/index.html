@@ -12,6 +12,7 @@
         <h1>Business Card Scanner</h1>
         <form id="uploadForm">
             <input type="file" id="imageInput" accept="image/*" required>
+            <input type="text" id="categoryInput" placeholder="Category" required>
             <button type="submit">Scan Business Card</button>
         </form>
         <div id="loadingMessage" style="display: none;">Processing...</div>
@@ -22,6 +23,7 @@
             <input type="email" id="emailInput" placeholder="Email">
             <input type="tel" id="phoneInput" placeholder="Phone">
             <input type="text" id="companyInput" placeholder="Company">
+            <input type="text" id="manualCategoryInput" placeholder="Category">
             <button id="submitManualInput">Submit</button>
         </div>
         <div id="cardList"></div>

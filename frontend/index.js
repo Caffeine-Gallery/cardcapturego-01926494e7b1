@@ -2,6 +2,7 @@ import { backend } from 'declarations/backend';
 
 const uploadForm = document.getElementById('uploadForm');
 const imageInput = document.getElementById('imageInput');
+const categoryInput = document.getElementById('categoryInput');
 const loadingMessage = document.getElementById('loadingMessage');
 const errorMessage = document.getElementById('errorMessage');
 const manualInputForm = document.getElementById('manualInputForm');
@@ -10,8 +11,13 @@ const cardList = document.getElementById('cardList');
 uploadForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const file = imageInput.files[0];
+  const category = categoryInput.value.trim();
   if (!file) {
     showError('Please select an image file.');
+    return;
+  }
+  if (!category) {
+    showError('Please enter a category.');
     return;
   }
 
@@ -29,7 +35,7 @@ uploadForm.addEventListener('submit', async (e) => {
     const extractedText = await extractTextFromImage(file);
     const cardInfo = parseBusinessCardInfo(extractedText);
     
-    await addBusinessCard(cardInfo, imageData);
+    await addBusinessCard(cardInfo, imageData, category);
 
     loadingMessage.style.display = 'none';
     await displayBusinessCards();
@@ -49,9 +55,15 @@ document.getElementById('submitManualInput').addEventListener('click', async () 
     phone: document.getElementById('phoneInput').value,
     company: document.getElementById('companyInput').value,
   };
+  const category = document.getElementById('manualCategoryInput').value.trim();
+
+  if (!category) {
+    showError('Please enter a category.');
+    return;
+  }
 
   const imageData = await readFileAsDataURL(imageInput.files[0]);
-  await addBusinessCard(cardInfo, imageData);
+  await addBusinessCard(cardInfo, imageData, category);
   manualInputForm.style.display = 'none';
   await displayBusinessCards();
 });
@@ -97,14 +109,15 @@ function parseBusinessCardInfo(text) {
   return info;
 }
 
-async function addBusinessCard(cardInfo, imageData) {
+async function addBusinessCard(cardInfo, imageData, category) {
   try {
     await backend.addBusinessCard(
       cardInfo.name,
       cardInfo.email,
       cardInfo.phone,
       cardInfo.company,
-      imageData
+      imageData,
+      category
     );
   } catch (error) {
     console.error('Error adding business card:', error);
@@ -122,6 +135,8 @@ async function displayBusinessCards() {
         <p>Email: ${card.email}</p>
         <p>Phone: ${card.phone}</p>
         <p>Company: ${card.company}</p>
+        <p>Category: ${card.category}</p>
+        <p>Scan Date: ${new Date(Number(card.scanDate) / 1000000).toLocaleString()}</p>
       </div>
     `).join('');
   } catch (error) {

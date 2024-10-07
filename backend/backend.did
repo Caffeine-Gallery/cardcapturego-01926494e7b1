@@ -1,13 +1,15 @@
 type BusinessCard = 
  record {
+   category: text;
    company: text;
    email: text;
    id: nat;
    imageData: text;
    name: text;
    phone: text;
+   scanDate: int;
  };
 service : {
-  addBusinessCard: (text, text, text, text, text) -> (nat);
+  addBusinessCard: (text, text, text, text, text, text) -> (nat);
   getBusinessCards: () -> (vec BusinessCard) query;
 }

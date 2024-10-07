@@ -4,15 +4,17 @@ import type { IDL } from '@dfinity/candid';
 
 export interface BusinessCard {
   'id' : bigint,
+  'scanDate' : bigint,
   'imageData' : string,
   'name' : string,
   'email' : string,
   'company' : string,
+  'category' : string,
   'phone' : string,
 }
 export interface _SERVICE {
   'addBusinessCard' : ActorMethod<
-    [string, string, string, string, string],
+    [string, string, string, string, string, string],
     bigint
   >,
   'getBusinessCards' : ActorMethod<[], Array<BusinessCard>>,
