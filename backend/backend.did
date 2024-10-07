@@ -13,4 +13,5 @@ service : {
   addBusinessCard: (text, text, text, text, text, text) -> (nat);
   getBusinessCards: () -> (vec BusinessCard) query;
   getCategories: () -> (vec text) query;
+  searchBusinessCards: (text) -> (vec BusinessCard) query;
 }

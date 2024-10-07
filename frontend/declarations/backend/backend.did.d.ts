@@ -19,6 +19,7 @@ export interface _SERVICE {
   >,
   'getBusinessCards' : ActorMethod<[], Array<BusinessCard>>,
   'getCategories' : ActorMethod<[], Array<string>>,
+  'searchBusinessCards' : ActorMethod<[string], Array<BusinessCard>>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;
 export declare const init: (args: { IDL: typeof IDL }) => IDL.Type[];

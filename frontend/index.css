@@ -33,7 +33,7 @@ h1, h2 {
     text-align: center;
 }
 
-form, #manualInputForm {
+form, #manualInputForm, #searchContainer {
     background: #fff;
     padding: 20px;
     margin-bottom: 20px;
@@ -66,6 +66,19 @@ button {
 
 button:hover {
     background: #3182ce;
+}
+
+#searchContainer {
+    display: flex;
+    gap: 10px;
+}
+
+#searchInput {
+    flex-grow: 1;
+}
+
+#searchButton {
+    width: auto;
 }
 
 #loadingMessage, #errorMessage {

@@ -7,6 +7,8 @@ const errorMessage = document.getElementById('errorMessage');
 const manualInputForm = document.getElementById('manualInputForm');
 const cardList = document.getElementById('cardList');
 const categoryList = document.getElementById('categoryList');
+const searchInput = document.getElementById('searchInput');
+const searchButton = document.getElementById('searchButton');
 
 let allCards = [];
 let currentCategory = 'all';
@@ -74,6 +76,16 @@ document.getElementById('submitManualInput').addEventListener('click', async () 
     await addBusinessCard(cardInfo, imageData, category);
     manualInputForm.style.display = 'none';
     await refreshCards();
+});
+
+searchButton.addEventListener('click', async () => {
+    const query = searchInput.value.trim();
+    if (query) {
+        const searchResults = await backend.searchBusinessCards(query);
+        displayBusinessCards(searchResults);
+    } else {
+        displayBusinessCards(allCards);
+    }
 });
 
 function showError(message) {
@@ -147,7 +159,7 @@ async function refreshCards() {
         allCards = await backend.getBusinessCards();
         const categories = await backend.getCategories();
         updateCategoryList(categories);
-        displayBusinessCards();
+        displayBusinessCards(allCards);
     } catch (error) {
         console.error('Error fetching business cards:', error);
         showError('An error occurred while fetching business cards. Please refresh the page.');
@@ -174,7 +186,7 @@ function updateCategoryList(categories) {
         `;
         li.addEventListener('click', () => {
             currentCategory = category;
-            displayBusinessCards();
+            displayBusinessCards(allCards);
             updateActiveCategory(li);
         });
         categoryList.appendChild(li);
@@ -186,10 +198,10 @@ function updateActiveCategory(clickedElement) {
     clickedElement.classList.add('active');
 }
 
-function displayBusinessCards() {
+function displayBusinessCards(cards) {
     const filteredCards = currentCategory === 'all' 
-        ? allCards 
-        : allCards.filter(card => card.category === currentCategory);
+        ? cards 
+        : cards.filter(card => card.category === currentCategory);
 
     cardList.innerHTML = filteredCards.map(card => `
         <div class="card">
@@ -211,7 +223,7 @@ function displayBusinessCards() {
 
 categoryList.querySelector('[data-category="all"]').addEventListener('click', () => {
     currentCategory = 'all';
-    displayBusinessCards();
+    displayBusinessCards(allCards);
     updateActiveCategory(categoryList.querySelector('[data-category="all"]'));
 });
 

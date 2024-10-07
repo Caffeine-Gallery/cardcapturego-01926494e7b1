@@ -1,6 +1,5 @@
 import Bool "mo:base/Bool";
 import Hash "mo:base/Hash";
-import Int "mo:base/Int";
 
 import Array "mo:base/Array";
 import Blob "mo:base/Blob";
@@ -9,6 +8,7 @@ import Text "mo:base/Text";
 import Time "mo:base/Time";
 import Iter "mo:base/Iter";
 import HashMap "mo:base/HashMap";
+import Int "mo:base/Int";
 
 actor BusinessCardScanner {
   type BusinessCard = {
@@ -54,5 +54,17 @@ actor BusinessCardScanner {
       categorySet.put(card.category, true);
     };
     Iter.toArray(categorySet.keys())
+  };
+
+  public query func searchBusinessCards(searchText: Text) : async [BusinessCard] {
+    let lowercaseQuery = Text.toLowercase(searchText);
+    Array.filter(cards, func (card: BusinessCard) : Bool {
+      Text.contains(Text.toLowercase(card.name), #text lowercaseQuery) or
+      Text.contains(Text.toLowercase(card.email), #text lowercaseQuery) or
+      Text.contains(Text.toLowercase(card.phone), #text lowercaseQuery) or
+      Text.contains(Text.toLowercase(card.company), #text lowercaseQuery) or
+      Text.contains(Text.toLowercase(card.category), #text lowercaseQuery) or
+      Text.contains(Int.toText(card.scanDate), #text lowercaseQuery)
+    })
   };
 }
