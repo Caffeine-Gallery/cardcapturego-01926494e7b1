@@ -141,11 +141,14 @@ button:hover {
     color: #fff;
 }
 
-.icon {
-    width: 24px;
-    height: 24px;
+#categoryList li i {
     margin-right: 10px;
-    fill: currentColor;
+    width: 20px;
+    text-align: center;
+}
+
+.card p i {
+    margin-right: 5px;
 }
 
 @media (max-width: 768px) {
