@@ -13,20 +13,22 @@ body {
     padding: 20px;
 }
 
-h1 {
+h1, h2 {
     color: #333;
     text-align: center;
 }
 
-form {
+form, #manualInputForm {
     background: #fff;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 5px;
 }
 
-input[type="file"] {
+input[type="file"], input[type="text"], input[type="email"], input[type="tel"] {
     display: block;
+    width: 100%;
+    padding: 10px;
     margin-bottom: 10px;
 }
 

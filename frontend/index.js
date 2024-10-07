@@ -4,6 +4,7 @@ const uploadForm = document.getElementById('uploadForm');
 const imageInput = document.getElementById('imageInput');
 const loadingMessage = document.getElementById('loadingMessage');
 const errorMessage = document.getElementById('errorMessage');
+const manualInputForm = document.getElementById('manualInputForm');
 const cardList = document.getElementById('cardList');
 
 uploadForm.addEventListener('submit', async (e) => {
@@ -21,33 +22,47 @@ uploadForm.addEventListener('submit', async (e) => {
 
   loadingMessage.style.display = 'block';
   errorMessage.style.display = 'none';
+  manualInputForm.style.display = 'none';
 
   try {
     const imageData = await readFileAsDataURL(file);
     const extractedText = await extractTextFromImage(imageData);
     const cardInfo = parseBusinessCardInfo(extractedText);
     
-    const id = await backend.addBusinessCard(
-      cardInfo.name,
-      cardInfo.email,
-      cardInfo.phone,
-      cardInfo.company,
-      imageData
-    );
+    await addBusinessCard(cardInfo, imageData);
 
     loadingMessage.style.display = 'none';
     await displayBusinessCards();
   } catch (error) {
     console.error('Error processing business card:', error);
-    showError('An error occurred while processing the business card. Please try again.');
+    showError('An error occurred while processing the business card. Please try manual input.');
+    showManualInputForm();
   } finally {
     loadingMessage.style.display = 'none';
   }
 });
 
+document.getElementById('submitManualInput').addEventListener('click', async () => {
+  const cardInfo = {
+    name: document.getElementById('nameInput').value,
+    email: document.getElementById('emailInput').value,
+    phone: document.getElementById('phoneInput').value,
+    company: document.getElementById('companyInput').value,
+  };
+
+  const imageData = await readFileAsDataURL(imageInput.files[0]);
+  await addBusinessCard(cardInfo, imageData);
+  manualInputForm.style.display = 'none';
+  await displayBusinessCards();
+});
+
 function showError(message) {
   errorMessage.textContent = message;
   errorMessage.style.display = 'block';
+}
+
+function showManualInputForm() {
+  manualInputForm.style.display = 'block';
 }
 
 function readFileAsDataURL(file) {
@@ -77,13 +92,15 @@ async function extractTextFromImage(imageData) {
     }
 
     const data = await response.json();
-    console.log('OCR API response:', data); // For debugging
+    console.log('Full OCR API response:', data);
 
-    if (!data.ParsedResults || !data.ParsedResults[0] || !data.ParsedResults[0].ParsedText) {
+    if (data.ParsedResults && data.ParsedResults.length > 0) {
+      return data.ParsedResults[0].ParsedText || '';
+    } else if (data.ErrorMessage) {
+      throw new Error(`OCR API error: ${data.ErrorMessage}`);
+    } else {
       throw new Error('Unexpected OCR API response format');
     }
-
-    return data.ParsedResults[0].ParsedText;
   } catch (error) {
     console.error('Error in extractTextFromImage:', error);
     throw new Error('Failed to extract text from image');
@@ -91,7 +108,7 @@ async function extractTextFromImage(imageData) {
 }
 
 function parseBusinessCardInfo(text) {
-  const lines = text.split('\n');
+  const lines = text.split('\n').filter(line => line.trim() !== '');
   const info = {
     name: lines[0] || '',
     email: lines.find(line => line.includes('@')) || '',
@@ -99,6 +116,21 @@ function parseBusinessCardInfo(text) {
     company: lines[lines.length - 1] || '',
   };
   return info;
+}
+
+async function addBusinessCard(cardInfo, imageData) {
+  try {
+    await backend.addBusinessCard(
+      cardInfo.name,
+      cardInfo.email,
+      cardInfo.phone,
+      cardInfo.company,
+      imageData
+    );
+  } catch (error) {
+    console.error('Error adding business card:', error);
+    throw new Error('Failed to add business card');
+  }
 }
 
 async function displayBusinessCards() {
