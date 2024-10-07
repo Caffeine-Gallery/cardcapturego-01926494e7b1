@@ -10,13 +10,13 @@ actor BusinessCardScanner {
     email: Text;
     phone: Text;
     company: Text;
-    imageUrl: Text;
+    imageData: Text;
   };
 
   stable var cards : [BusinessCard] = [];
   stable var nextId : Nat = 0;
 
-  public func addBusinessCard(name: Text, email: Text, phone: Text, company: Text, imageUrl: Text) : async Nat {
+  public func addBusinessCard(name: Text, email: Text, phone: Text, company: Text, imageData: Text) : async Nat {
     let id = nextId;
     nextId += 1;
 
@@ -26,7 +26,7 @@ actor BusinessCardScanner {
       email;
       phone;
       company;
-      imageUrl;
+      imageData;
     };
 
     cards := Array.append(cards, [newCard]);

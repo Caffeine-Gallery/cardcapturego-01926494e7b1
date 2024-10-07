@@ -44,9 +44,14 @@ button:hover {
     background: #555;
 }
 
-#loadingMessage {
+#loadingMessage, #errorMessage {
     text-align: center;
     margin-bottom: 20px;
+}
+
+#errorMessage {
+    color: red;
+    font-weight: bold;
 }
 
 #cardList {

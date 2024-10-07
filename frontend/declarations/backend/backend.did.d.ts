@@ -4,10 +4,10 @@ import type { IDL } from '@dfinity/candid';
 
 export interface BusinessCard {
   'id' : bigint,
+  'imageData' : string,
   'name' : string,
   'email' : string,
   'company' : string,
-  'imageUrl' : string,
   'phone' : string,
 }
 export interface _SERVICE {
